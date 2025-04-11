@@ -1,31 +1,20 @@
-# Use a specific node version instead of latest for stability
-FROM node:20-slim
+# Specify the base image
+FROM node:latest
 
-# Switch to root temporarily to set up directories
-USER root
-
-# Create and set working directory
+# Set the working directory in the container
 WORKDIR /usr/src/app
 
-# Copy package files
+# Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install production dependencies only
-RUN npm ci --only=production && \
-    chown -R node:node /usr/src/app/node_modules
+# Install dependencies
+RUN npm install
 
-# Copy application code
+# Copy the rest of the code
 COPY . .
-RUN chown -R node:node /usr/src/app
 
-# Switch back to node user for security
-USER node
-
-# Expose the port
-EXPOSE 80
-
-# Set NODE_ENV
-ENV NODE_ENV=production
+# Expose the port the app runs on
+EXPOSE 3000
 
 # Start the application
-CMD ["node", "index.js"]
+CMD ["npm", "run", "dev"]
